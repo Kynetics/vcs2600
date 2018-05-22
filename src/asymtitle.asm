@@ -1,4 +1,4 @@
-;
+; Adapted by Nicola La Gloria
 ;
 ; A Simple Asymmetrical Title Screen Playfield
 ;
@@ -14,13 +14,16 @@
 ; instead of repeating it - also it's a steady 60 FPS, 262 scanlines,
 ; unlike some of its predecessors
 ;
-; It uses no RAM, but all Registers when it's drawing the title 
 
 
 	processor 6502
 	include vcs.h
 	include macro.h
 	org $F000
+
+; store variables in memory
+; TODO 
+
 Start
 	CLEAN_START
 
@@ -63,13 +66,23 @@ scanlinesPerTitlePixel = #6
 
 
 ;just burning scanlines....you could do something else
-	ldy #20
+	ldx #40
+	ldy #57
+
 TitlePreLoop
-	sta WSYNC	
+
+	sta WSYNC
+	stx COLUBK
+	inx 	
 	dey
 	bne TitlePreLoop
 
 
+	lda #00 		; reset background color
+	sta COLUBK
+	sta WSYNC 		; create some black space
+	sta WSYNC
+	sta WSYNC
 
 	ldx #pixelHeightOfTitle ; X will hold what letter pixel we're on
 	ldy #scanlinesPerTitlePixel ; Y will hold which scan line we're on for each pixel
@@ -124,8 +137,11 @@ DoneWithTitle
 
 ;just burning scanlines....you could do something else
 	ldy #137
+	ldx #100 		; 40 + 60 (pretitle lines) so we start from the last color
 TitlePostLoop
 	sta WSYNC
+	stx COLUBK
+	inx 
 	dey
 	bne TitlePostLoop
 
