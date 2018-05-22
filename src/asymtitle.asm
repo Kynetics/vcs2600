@@ -2,21 +2,17 @@
 ;
 ; A Simple Asymmetrical Title Screen Playfield
 ;
-; this is a simple kernal meant to be usable for a title screen.
+; this is a simple kernel meant to be usable for a title screen.
 ; can be adapted to put playfield text at an arbitrary height on the screen
 ;
 ; it owes a great debt to Glenn Saunders Thu, 20 Sep 2001 Stella post
 ; " Asymmetrical Reflected Playfield" (who in turn took from Roger Williams,
 ; who in turn took from Nick Bensema--yeesh!)
 ;
-; it's meant to be a tightish, welll-commented, flexible kernal,
+; it's meant to be a tightish, welll-commented, flexible kernel,
 ; that displays a title (or other playfield graphic) once, 
 ; instead of repeating it - also it's a steady 60 FPS, 262 scanlines,
 ; unlike some of its predecessors
-;
-; also, it's non-reflected, so you can easily use a tool like my
-; online javascript tool at http://alienbill.com/vgames/playerpal/
-; to draw the playfield
 ;
 ; It uses no RAM, but all Registers when it's drawing the title 
 
@@ -145,9 +141,8 @@ OverScanWait
 
 ;
 ; the graphics!
-; I suggest my online javascript tool, 
-;PlayfieldPal at http://alienbill.com/vgames/playerpal/
-;to draw these things. Just rename 'em left and right
+;PlayfieldPal at https://alienbill.com/2600/playfieldpal.html
+;to draw these things. Just rename them left and right
 
 PFData0Left
         .byte #%00000000
