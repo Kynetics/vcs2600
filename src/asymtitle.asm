@@ -1,18 +1,12 @@
-; Adapted by Nicola La Gloria
-;
-; A Simple Asymmetrical Title Screen Playfield
-;
-; this is a simple kernel meant to be usable for a title screen.
-; can be adapted to put playfield text at an arbitrary height on the screen
-;
-; it owes a great debt to Glenn Saunders Thu, 20 Sep 2001 Stella post
+; Author: Nicola La Gloria, 2018
+; 
+; Thanks to Kirk Israel for the Asymmetrical Reflected Playfield code.
+; Visit, https://alienbill.com/2600/
+; 
+; This code owes a great debt to Glenn Saunders Thu, 20 Sep 2001 Stella post
 ; " Asymmetrical Reflected Playfield" (who in turn took from Roger Williams,
 ; who in turn took from Nick Bensema--yeesh!)
 ;
-; it's meant to be a tightish, welll-commented, flexible kernel,
-; that displays a title (or other playfield graphic) once, 
-; instead of repeating it - also it's a steady 60 FPS, 262 scanlines,
-; unlike some of its predecessors
 ;
 
 
@@ -30,13 +24,13 @@ Start
 	lda #00
 	sta COLUBK  ;black background 	
 	lda #45    
-	sta COLUPF  ;colored playfield
+	sta COLUPF  ;colored playfield and ball
 
 ;MainLoop starts with usual VBLANK code,
 ;and the usual timer seeding
 MainLoop
 	VERTICAL_SYNC
-	lda #60	
+	lda #15		
 	sta TIM64T
 ;
 ; lots of logic can go here, obviously,
@@ -70,7 +64,7 @@ scanlinesPerTitlePixel = #6
 	ldy #57
 
 TitlePreLoop
-
+; we color the pre title area
 	sta WSYNC
 	stx COLUBK
 	inx 	
@@ -80,19 +74,46 @@ TitlePreLoop
 
 	lda #00 		; reset background color
 	sta COLUBK
-	sta WSYNC 		; create some black space
+	sta WSYNC 		; create some padding
 	sta WSYNC
 	sta WSYNC
 
-	ldx #pixelHeightOfTitle ; X will hold what letter pixel we're on
-	ldy #scanlinesPerTitlePixel ; Y will hold which scan line we're on for each pixel
 
 ;
 ;the next part is careful cycle counting from those 
 ;who have gone before me....
+	
+; Ball code
+	lda #150 			; set ball color
+	sta COLUPF 
 
-TitleShowLoop
-	sta WSYNC 	
+	lda	#%0101000 		; set ball stretch
+	sta CTRLPF
+
+	lda #%00000010		; enable the ball
+	sta ENABL
+	sta WSYNC 			; not elegan to set the ball thinkness :)
+	sta WSYNC
+	sta WSYNC
+
+; move the ball!
+	lda #10
+	ldx #4 				; Ball sprite id for SetHozPos subroutine
+	jsr SetHorizPos
+	sta WSYNC
+	sta HMOVE
+	sleep 15
+	lda #%00000000		; disable the ball 
+	sta ENABL
+
+	ldx #pixelHeightOfTitle ; X will hold what letter pixel we're on
+	ldy #scanlinesPerTitlePixel ; Y will hold which scan line we're on for each pixel
+
+	lda #45   
+	sta COLUPF 
+
+TitleShowLoop	
+	sta WSYNC
 	lda PFData0Left-1,X           ;[0]+4
 	sta PF0                 ;[4]+3 = *7*   < 23	;PF0 visible
 	lda PFData1Left-1,X           ;[7]+4
@@ -112,9 +133,7 @@ TitleShowLoop
 	lda PFData2Right-1,X		;[41]+4
 	;PF2 rewrite must begin at exactly cycle 45!!, no more, no less
 	sta PF2			;[45]+2 = *47*  ; >
-
-
-
+	 
 	dey ;ok, we've drawn one more scaneline for this 'pixel'
 	bne NotChangingWhatTitlePixel ;go to not changing if we still have more to do for this pixel
 	dex ; we *are* changing what title pixel we're on...
@@ -128,7 +147,7 @@ NotChangingWhatTitlePixel
 	jmp TitleShowLoop
 
 DoneWithTitle	
-
+	
 	;clear out the playfield registers for obvious reasons	
 	lda #0
 	sta PF2 ;clear out PF2 first, I found out through experience
@@ -155,6 +174,21 @@ OverScanWait
 	bne OverScanWait
 	jmp  MainLoop      
 
+SetHorizPos 
+	sta WSYNC		; start a new line
+    bit 0
+    bit 0			; waste 6 cycles for tuning object speed
+	sec				; set carry flag
+DivideLoop
+	sbc #50			; this value determines the direction of motion, 35 is steady
+	bcs DivideLoop	; branch until negative
+	eor #7			; calculate fine offset
+	asl
+	asl
+	asl
+	asl
+	sta HMP0,x	; set fine offset
+	rts		; return to calle
 ;
 ; the graphics!
 ;PlayfieldPal at https://alienbill.com/2600/playfieldpal.html
