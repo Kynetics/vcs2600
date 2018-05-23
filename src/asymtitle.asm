@@ -86,7 +86,7 @@ TitlePreLoop
 ; Ball code
 	lda #150			; set ball color
 	sta COLUPF 
-	lda	#%0101000 		; set ball stretch
+	lda #%0101000		; set ball stretch
 	sta CTRLPF
 
 	lda #%00000010		; enable the ball
