@@ -174,10 +174,11 @@ OverScanWait
 	bne OverScanWait
 	jmp  MainLoop      
 
+; Subroutine to move horizontally a sprite  
 SetHorizPos 
 	sta WSYNC		; start a new line
-    bit 0
-    bit 0			; waste 6 cycles for tuning object speed
+	bit 0
+	bit 0			; waste 6 cycles for tuning object speed
 	sec				; set carry flag
 DivideLoop
 	sbc #50			; this value determines the direction of motion, 35 is steady
