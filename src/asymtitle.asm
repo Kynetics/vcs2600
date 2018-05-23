@@ -190,9 +190,9 @@ DivideLoop
 	sta HMP0,x	; set fine offset
 	rts		; return to calle
 ;
-; the graphics!
-;PlayfieldPal at https://alienbill.com/2600/playfieldpal.html
-;to draw these things. Just rename them left and right
+; the graphics for Kynetics title 
+; PlayfieldPal at https://alienbill.com/2600/playfieldpal.html
+; to draw these things. Just rename them left and right
 
 PFData0Left
         .byte #%00000000
