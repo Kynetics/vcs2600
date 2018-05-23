@@ -84,9 +84,8 @@ TitlePreLoop
 ;who have gone before me....
 	
 ; Ball code
-	lda #150 			; set ball color
+	lda #150			; set ball color
 	sta COLUPF 
-
 	lda	#%0101000 		; set ball stretch
 	sta CTRLPF
 
